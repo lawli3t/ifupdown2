@@ -1538,11 +1538,12 @@ class ifupdownMain:
             msubdir = modules_dir + '/if-%s.d' %op
             self.logger.info('loading scripts under %s ...' %msubdir)
             try:
-                module_list = os.listdir(msubdir)
-                for module in module_list:
+                module_list = utils.exec_command("run-parts --test --lsbsysinit %s" % msubdir).splitlines()
+                for script_path in module_list:
+                    module = os.path.basename(script_path)
                     if self.modules.get(module) or module in self.overridden_ifupdown_scripts:
                         continue
-                    self.script_ops[op].append(msubdir + '/' + module)
+                    self.script_ops[op].append(script_path)
             except Exception:
                 # continue reading
                 pass
